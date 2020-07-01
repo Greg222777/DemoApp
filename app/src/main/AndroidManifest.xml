@@ -22,7 +22,16 @@
             </intent-filter>
         </activity>
 
+        <!-- shake service -->
         <service android:name=".service.ShakeService" />
+
+        <!-- used to launch shake service when phone is rebooted -->
+        <receiver android:name=".service.BootCaptureIntentReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 
