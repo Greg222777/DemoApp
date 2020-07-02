@@ -5,13 +5,11 @@ import android.content.Context
 import android.content.Intent
 
 
-// here is the OnRevieve methode which will be called when boot completed
+// used to launch ShakeService when phone is rebooted
 class BootCaptureIntentReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        //we double check here for only boot complete event
         if (intent.action.equals(Intent.ACTION_BOOT_COMPLETED, ignoreCase = true)) {
-            //here we start the service  again.
             val serviceIntent = Intent(context, ShakeService::class.java)
             context.startService(serviceIntent)
         }
