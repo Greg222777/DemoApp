@@ -86,6 +86,10 @@ class ShakeService : Service(), OnShakeListener {
 
     }
 
+    /**
+     * Creates the mandatory notification channel for devices >= Oreo
+     * @param notificationManager notification manager used to send the shake notifications
+     */
     private fun createNotificationChannel(notificationManager: NotificationManager) {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
