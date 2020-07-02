@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.gregorynowik.demoapp.fragment.HomeFragment"
-        android:label="HomeFragment">
+        android:label="Demo App">
         <action
             android:id="@+id/action_homeFragment_to_bleDiscoveryFragment"
             app:destination="@id/bleDiscoveryFragment" />
@@ -16,5 +16,5 @@
     <fragment
         android:id="@+id/bleDiscoveryFragment"
         android:name="com.gregorynowik.demoapp.fragment.BleDiscoveryFragment"
-        android:label="BleDiscoveryFragment" />
+        android:label="Ble Discovery" />
 </navigation>
