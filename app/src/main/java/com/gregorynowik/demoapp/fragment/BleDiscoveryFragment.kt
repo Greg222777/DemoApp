@@ -6,12 +6,14 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.afollestad.materialdialogs.MaterialDialog
@@ -20,6 +22,12 @@ import com.gregorynowik.demoapp.databinding.FragmentBleDiscoveryBinding
 
 
 class BleDiscoveryFragment : Fragment() {
+
+    companion object ERROR_CODE {
+        const val LOCALISATION_PERMISSION_NOT_GRANTED = 0
+        const val BLUETOOTH_NOT_ENABLED = 1
+        const val BLE_SCAN_ERROR = 2
+    }
 
     lateinit var binding: FragmentBleDiscoveryBinding
     lateinit var viewModel: BleDiscoveryFragmentViewModel
@@ -40,7 +48,20 @@ class BleDiscoveryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        observeValues()
+
         checkLocationPermission()
+    }
+
+    private fun observeValues() {
+        viewModel.bleDeviceListLiveData.observe(viewLifecycleOwner, Observer { scanResultList ->
+            for (scanResult in scanResultList){
+                Log.e("GREGAPP", "scan result ${scanResult.device.name}")
+            }
+        })
+        viewModel.bleScanError.observe(viewLifecycleOwner, Observer { aborted ->
+            if (aborted) displayErrorMessage(BLE_SCAN_ERROR)
+        })
     }
 
     private fun checkLocationPermission() {
@@ -56,7 +77,10 @@ class BleDiscoveryFragment : Fragment() {
                     MaterialDialog(it).show {
                         title(R.string.localisation_permission_rationale_title)
                         message(R.string.localisation_permission_rationale_text)
-                        positiveButton { findNavController().popBackStack() }
+                        positiveButton {
+                            displayErrorMessage(LOCALISATION_PERMISSION_NOT_GRANTED)
+
+                        }
                     }
                 }
             }
@@ -67,7 +91,7 @@ class BleDiscoveryFragment : Fragment() {
                     if (isGranted) {
                         enableBluetooth()
                     } else {
-                        findNavController().popBackStack()
+                        displayErrorMessage(BLUETOOTH_NOT_ENABLED)
                     }
                 }.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
@@ -98,6 +122,31 @@ class BleDiscoveryFragment : Fragment() {
             }
 
         }
+    }
+
+    private fun displayErrorMessage(errorCode: Int) {
+        context?.let {
+            MaterialDialog(it).show {
+                title(R.string.scan_error_dialog_title)
+                message(
+                    when (errorCode) {
+                        LOCALISATION_PERMISSION_NOT_GRANTED -> R.string.scan_error_dialog_need_localisation_permission
+                        BLUETOOTH_NOT_ENABLED -> R.string.scan_error_dialog_bluetooth_not_enabled
+                        BLE_SCAN_ERROR -> R.string.scan_error_unknown_scan_error
+                        else -> R.string.scan_error_unknown_scan_error
+                    }
+                )
+                negativeButton {
+                    // return to home screen when the error is acknowledged
+                    findNavController().popBackStack()
+                }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.stopScanning()
     }
 
 }
