@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">DemoApp</string>
     <string name="ble_discovery">Bluetooth discovery</string>
+
+    <string name="localisation_permission_rationale_title">Localisation permission required</string>
+    <string name="localisation_permission_rationale_text">Localisation permission is required to perform a Bluetooth scan</string>
 </resources>
