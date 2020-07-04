@@ -75,20 +75,27 @@ class BleDiscoveryFragment : Fragment() {
     }
 
     private fun enableBluetooth() {
-        if (viewModel.bluetoothAdapter != null && !viewModel.bluetoothAdapter!!.isEnabled) {
-            val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            requireActivity().registerForActivityResult(
-                ActivityResultContracts.StartActivityForResult()
-            ) { result ->
-                when (result.resultCode) {
-                    Activity.RESULT_OK -> {
-                        viewModel.startScanning()
+        when {
+            viewModel.bluetoothAdapter == null -> {
+            }
+            !viewModel.bluetoothAdapter!!.isEnabled -> {
+                val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                requireActivity().registerForActivityResult(
+                    ActivityResultContracts.StartActivityForResult()
+                ) { result ->
+                    when (result.resultCode) {
+                        Activity.RESULT_OK -> {
+                            viewModel.startScanning()
+                        }
+                        Activity.RESULT_CANCELED -> {
+                            findNavController().popBackStack()
+                        }
                     }
-                    Activity.RESULT_CANCELED -> {
-                        findNavController().popBackStack()
-                    }
-                }
-            }.launch(enableBluetoothIntent)
+                }.launch(enableBluetoothIntent)
+            }
+            else -> {
+                viewModel.startScanning()
+            }
 
         }
     }
