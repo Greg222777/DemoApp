@@ -16,8 +16,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.gregorynowik.demoapp.R
+import com.gregorynowik.demoapp.adapter.ScanDeviceAdapter
 import com.gregorynowik.demoapp.databinding.FragmentBleDiscoveryBinding
 
 
@@ -31,6 +33,10 @@ class BleDiscoveryFragment : Fragment() {
 
     lateinit var binding: FragmentBleDiscoveryBinding
     lateinit var viewModel: BleDiscoveryFragmentViewModel
+
+    val bleScanAdapter = ScanDeviceAdapter()
+
+
 
 
     override fun onCreateView(
@@ -48,6 +54,9 @@ class BleDiscoveryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.bleScanRecyclerView.adapter = bleScanAdapter
+        binding.bleScanRecyclerView.layoutManager = LinearLayoutManager(context)
+
         observeValues()
 
         checkLocationPermission()
@@ -55,9 +64,8 @@ class BleDiscoveryFragment : Fragment() {
 
     private fun observeValues() {
         viewModel.bleDeviceListLiveData.observe(viewLifecycleOwner, Observer { scanResultList ->
-            for (scanResult in scanResultList){
-                Log.e("GREGAPP", "scan result ${scanResult.device.name}")
-            }
+            bleScanAdapter.scanResultList = scanResultList
+                bleScanAdapter.notifyDataSetChanged()
         })
         viewModel.bleScanError.observe(viewLifecycleOwner, Observer { aborted ->
             if (aborted) displayErrorMessage(BLE_SCAN_ERROR)
@@ -79,7 +87,6 @@ class BleDiscoveryFragment : Fragment() {
                         message(R.string.localisation_permission_rationale_text)
                         positiveButton {
                             displayErrorMessage(LOCALISATION_PERMISSION_NOT_GRANTED)
-
                         }
                     }
                 }
@@ -91,7 +98,7 @@ class BleDiscoveryFragment : Fragment() {
                     if (isGranted) {
                         enableBluetooth()
                     } else {
-                        displayErrorMessage(BLUETOOTH_NOT_ENABLED)
+                        displayErrorMessage(LOCALISATION_PERMISSION_NOT_GRANTED)
                     }
                 }.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
@@ -112,7 +119,7 @@ class BleDiscoveryFragment : Fragment() {
                             viewModel.startScanning()
                         }
                         Activity.RESULT_CANCELED -> {
-                            findNavController().popBackStack()
+                            displayErrorMessage(BLUETOOTH_NOT_ENABLED)
                         }
                     }
                 }.launch(enableBluetoothIntent)
