@@ -12,4 +12,14 @@
 
     <string name="home_scan_dialog_title">Your phone was shaken !</string>
     <string name="home_scan_dialog_message">Launch bluetooth device scan ?</string>
+
+    <string name="scanning_text">Scanning Bluetooth devices…</string>
+
+    <string name="scan_devices">Scan Bluetooth devices</string>
+
+    <string name="notification_channel_name">demo app notifications</string>
+    <string name="notification_channel_message">Notifications for demo app</string>
+
+    <string name="shake_notification_title">Your phone was shaken</string>
+    <string name="shake_notification_message">Open this notification to connect to bluetooth</string>
 </resources>

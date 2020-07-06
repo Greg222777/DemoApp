@@ -83,8 +83,8 @@ class ShakeService : Service(), OnShakeListener {
             }
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("Your phone was shaken")
-                .setContentText("Open this notification to connect to bluetooth")
+                .setContentTitle(getString(R.string.shake_notification_title))
+                .setContentText(getString(R.string.shake_notification_message))
                 .build()
 
         notificationManager.notify(Random.nextInt(), notification)
@@ -99,8 +99,8 @@ class ShakeService : Service(), OnShakeListener {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name: CharSequence = "demo app notifications"
-            val description = "Notifications for demo app"
+            val name: CharSequence = getString(R.string.notification_channel_name)
+            val description = getString(R.string.notification_channel_message)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(
                 CHANNEL_ID, name,

@@ -9,7 +9,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.afollestad.materialdialogs.MaterialDialog
-import com.gregorynowik.demoapp.MainActivity
 import com.gregorynowik.demoapp.R
 import com.gregorynowik.demoapp.databinding.FragmentHomeBinding
 import com.gregorynowik.demoapp.service.ShakeService
@@ -18,6 +17,7 @@ class HomeFragment : Fragment() {
 
     lateinit var binding: FragmentHomeBinding
     lateinit var blueToothDeviceViewModel: BlueToothDeviceViewModel
+    var wasScanDeviceDialogShown = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,6 +30,13 @@ class HomeFragment : Fragment() {
 
         binding = FragmentHomeBinding.inflate(layoutInflater)
 
+        binding.scanDevicesButton.setOnClickListener { navigateToBleDiscoveryFragment() }
+
+        if (mustShowDiscoveryDialog()) {
+            showDiscoveryDialog()
+            wasScanDeviceDialogShown = true
+        }
+
         return binding.root
     }
 
@@ -38,9 +45,7 @@ class HomeFragment : Fragment() {
 
         observeValues()
 
-        if (mustShowDiscoveryDialog()) {
-            showDiscoveryDialog()
-        }
+
     }
 
     /**
@@ -70,6 +75,7 @@ class HomeFragment : Fragment() {
     /**
      * This function checks into the activity intent if it was opened by
      * clicking on the shake notification
+     * dialog must be only shown once
      * @return dialog must be displayed to the user
      */
     private fun mustShowDiscoveryDialog(): Boolean {
@@ -77,6 +83,7 @@ class HomeFragment : Fragment() {
         if (activity == null ||
             requireActivity().intent == null
             || requireActivity().intent.extras == null
+            || wasScanDeviceDialogShown
         ) return false
 
         return requireActivity().intent!!.extras!!.getBoolean(

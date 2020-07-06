@@ -180,6 +180,7 @@ class BleDiscoveryFragment : Fragment(), ScanDeviceAdapter.ScanResultAdapterInte
 
     override fun onScanResultClicked(scanResult: ScanResult) {
         blueToothDeviceViewModel.blueToothDeviceLiveData.value = scanResult.device
+        findNavController().popBackStack()
     }
 
 }
