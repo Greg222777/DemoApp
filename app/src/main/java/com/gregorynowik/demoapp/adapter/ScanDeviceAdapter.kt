@@ -12,6 +12,8 @@ class ScanDeviceAdapter : RecyclerView.Adapter<ScanDeviceAdapter.ViewHolder>() {
 
     var scanResultList = mutableListOf<ScanResult>()
 
+    var scanResultAdapterInterface : ScanResultAdapterInterface? = null
+
     inner class ViewHolder(private val binding: ItemScanResultBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -19,7 +21,10 @@ class ScanDeviceAdapter : RecyclerView.Adapter<ScanDeviceAdapter.ViewHolder>() {
             binding.scanResult = scanResult
             binding.executePendingBindings()
         }
+    }
 
+    interface ScanResultAdapterInterface{
+        fun onScanResultClicked(scanResult: ScanResult)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -32,8 +37,11 @@ class ScanDeviceAdapter : RecyclerView.Adapter<ScanDeviceAdapter.ViewHolder>() {
         return scanResultList.size
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) =
-        holder.bind(scanResultList[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.itemView.setOnClickListener { scanResultAdapterInterface?.onScanResultClicked(scanResultList[position]) }
+       return holder.bind(scanResultList[position])
+    }
+
 
 
 }

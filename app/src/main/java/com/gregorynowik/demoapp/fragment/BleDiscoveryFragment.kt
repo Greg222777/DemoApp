@@ -3,10 +3,10 @@ package com.gregorynowik.demoapp.fragment
 import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.le.ScanResult
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,9 +23,10 @@ import com.gregorynowik.demoapp.adapter.ScanDeviceAdapter
 import com.gregorynowik.demoapp.databinding.FragmentBleDiscoveryBinding
 
 
-class BleDiscoveryFragment : Fragment() {
+class BleDiscoveryFragment : Fragment(), ScanDeviceAdapter.ScanResultAdapterInterface {
 
-    companion object ERROR_CODE {
+    companion object {
+        // error codes
         const val LOCALISATION_PERMISSION_NOT_GRANTED = 0
         const val BLUETOOTH_NOT_ENABLED = 1
         const val BLE_SCAN_ERROR = 2
@@ -33,11 +34,9 @@ class BleDiscoveryFragment : Fragment() {
 
     lateinit var binding: FragmentBleDiscoveryBinding
     lateinit var viewModel: BleDiscoveryFragmentViewModel
+    lateinit var blueToothDeviceViewModel : BlueToothDeviceViewModel
 
     val bleScanAdapter = ScanDeviceAdapter()
-
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,6 +45,8 @@ class BleDiscoveryFragment : Fragment() {
     ): View? {
 
         viewModel = ViewModelProviders.of(this).get(BleDiscoveryFragmentViewModel::class.java)
+        blueToothDeviceViewModel = ViewModelProviders.of(requireActivity()).get(BlueToothDeviceViewModel::class.java)
+
         binding = FragmentBleDiscoveryBinding.inflate(layoutInflater)
 
         return binding.root
@@ -54,8 +55,10 @@ class BleDiscoveryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // set up scan result recycler view
         binding.bleScanRecyclerView.adapter = bleScanAdapter
         binding.bleScanRecyclerView.layoutManager = LinearLayoutManager(context)
+        bleScanAdapter.scanResultAdapterInterface = this
 
         observeValues()
 
@@ -154,6 +157,10 @@ class BleDiscoveryFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         viewModel.stopScanning()
+    }
+
+    override fun onScanResultClicked(scanResult: ScanResult) {
+        blueToothDeviceViewModel.blueToothDeviceLiveData.value = scanResult.device
     }
 
 }
