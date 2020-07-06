@@ -7,7 +7,6 @@ import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import com.gregorynowik.demoapp.MainActivity
 import com.gregorynowik.demoapp.R
 import com.gregorynowik.demoapp.service.ShakeDetector.OnShakeListener
@@ -18,12 +17,14 @@ class ShakeService : Service(), OnShakeListener {
 
     companion object {
         const val CHANNEL_ID = "demo_app_channel_id"
+        const val MIN_DELAY_BETWEEN_NOTIFICATIONS = 5*1000 //ms
     }
 
     // Shake detection
     private var sensorManager: SensorManager? = null
     private var accelerometer: Sensor? = null
     private var shakeDetector: ShakeDetector? = null
+    private var lastSentNotification = 0.toLong()
 
     override fun onCreate() {
         super.onCreate()
@@ -42,12 +43,14 @@ class ShakeService : Service(), OnShakeListener {
 
 
     override fun onShake(count: Int) {
-        showNotification()
+        // check 5s min spam between notifications
+        if (System.currentTimeMillis() > lastSentNotification + MIN_DELAY_BETWEEN_NOTIFICATIONS) {
+            lastSentNotification = System.currentTimeMillis()
+            showNotification()
+        }
     }
 
     private fun showNotification() {
-
-        Log.e("GREGAPP", "show notification")
 
         // instanciate notification manager
         val notificationManager: NotificationManager =
