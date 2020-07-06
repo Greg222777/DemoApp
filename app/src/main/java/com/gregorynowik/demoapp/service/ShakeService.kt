@@ -17,6 +17,7 @@ class ShakeService : Service(), OnShakeListener {
 
     companion object {
         const val CHANNEL_ID = "demo_app_channel_id"
+        const val EXTRA_OPENED_FROM_SHAKE_NOTIFICATION = "extra_opened_from_shake_notification"
         const val MIN_DELAY_BETWEEN_NOTIFICATIONS = 5*1000 //ms
     }
 
@@ -64,6 +65,7 @@ class ShakeService : Service(), OnShakeListener {
         // make intenent pointing to MainActivity
         val notificationIntent = Intent(baseContext, MainActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            putExtra(EXTRA_OPENED_FROM_SHAKE_NOTIFICATION, true)
         }
 
         val pendingIntent = PendingIntent.getActivity(

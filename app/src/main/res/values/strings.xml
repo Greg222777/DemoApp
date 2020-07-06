@@ -9,4 +9,7 @@
     <string name="scan_error_dialog_need_localisation_permission">Localisation permission is required to perform a Bluetooth scan</string>
     <string name="scan_error_dialog_bluetooth_not_enabled">Bluetooth needs to be enabled to perform a scan</string>
     <string name="scan_error_unknown_scan_error">An error with Bluetooth scan occurred</string>
+
+    <string name="home_scan_dialog_title">Your phone was shaken !</string>
+    <string name="home_scan_dialog_message">Launch bluetooth device scan ?</string>
 </resources>

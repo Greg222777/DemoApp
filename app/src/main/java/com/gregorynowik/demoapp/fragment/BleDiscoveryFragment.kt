@@ -34,7 +34,7 @@ class BleDiscoveryFragment : Fragment(), ScanDeviceAdapter.ScanResultAdapterInte
 
     lateinit var binding: FragmentBleDiscoveryBinding
     lateinit var viewModel: BleDiscoveryFragmentViewModel
-    lateinit var blueToothDeviceViewModel : BlueToothDeviceViewModel
+    lateinit var blueToothDeviceViewModel: BlueToothDeviceViewModel
 
     val bleScanAdapter = ScanDeviceAdapter()
 
@@ -45,7 +45,8 @@ class BleDiscoveryFragment : Fragment(), ScanDeviceAdapter.ScanResultAdapterInte
     ): View? {
 
         viewModel = ViewModelProviders.of(this).get(BleDiscoveryFragmentViewModel::class.java)
-        blueToothDeviceViewModel = ViewModelProviders.of(requireActivity()).get(BlueToothDeviceViewModel::class.java)
+        blueToothDeviceViewModel =
+            ViewModelProviders.of(requireActivity()).get(BlueToothDeviceViewModel::class.java)
 
         binding = FragmentBleDiscoveryBinding.inflate(layoutInflater)
 
@@ -68,13 +69,20 @@ class BleDiscoveryFragment : Fragment(), ScanDeviceAdapter.ScanResultAdapterInte
     private fun observeValues() {
         viewModel.bleDeviceListLiveData.observe(viewLifecycleOwner, Observer { scanResultList ->
             bleScanAdapter.scanResultList = scanResultList
-                bleScanAdapter.notifyDataSetChanged()
+            bleScanAdapter.notifyDataSetChanged()
         })
         viewModel.bleScanError.observe(viewLifecycleOwner, Observer { aborted ->
             if (aborted) displayErrorMessage(BLE_SCAN_ERROR)
         })
     }
 
+    /**
+     * Checks for location permission
+     * Can be either
+     * -already granted (in that case, call enableBluetooth()
+     * -must show rationale
+     * -declined
+     */
     private fun checkLocationPermission() {
         when {
             ContextCompat.checkSelfPermission(
@@ -108,9 +116,15 @@ class BleDiscoveryFragment : Fragment(), ScanDeviceAdapter.ScanResultAdapterInte
         }
     }
 
+    /**
+     * Check if bluetooth is enabled
+     * if YES, launch the bluetooth scan
+     * if NO, ask for it to be enabled.  If the user refuses, display an error message
+     */
     private fun enableBluetooth() {
         when {
             viewModel.bluetoothAdapter == null -> {
+                displayErrorMessage(BLUETOOTH_NOT_ENABLED)
             }
             !viewModel.bluetoothAdapter!!.isEnabled -> {
                 val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
@@ -134,6 +148,11 @@ class BleDiscoveryFragment : Fragment(), ScanDeviceAdapter.ScanResultAdapterInte
         }
     }
 
+    /**
+     * Shows a dialog with the error that occurred
+     * Closes the fragment when dialog was acknowledged
+     * @param errorCode : the error type
+     */
     private fun displayErrorMessage(errorCode: Int) {
         context?.let {
             MaterialDialog(it).show {
