@@ -82,13 +82,12 @@ class ShakeService : Service(), OnShakeListener {
                 Notification.Builder(baseContext)
             }
                 .setContentIntent(pendingIntent)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.drawable.vibration_24px)
                 .setContentTitle(getString(R.string.shake_notification_title))
                 .setContentText(getString(R.string.shake_notification_message))
                 .build()
 
         notificationManager.notify(Random.nextInt(), notification)
-
     }
 
     /**
