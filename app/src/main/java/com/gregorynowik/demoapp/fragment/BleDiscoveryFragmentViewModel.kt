@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModel
 
 class BleDiscoveryFragmentViewModel : ViewModel() {
 
-    val bleDeviceList = mutableListOf<ScanResult>()
+    private val bleDeviceList = mutableListOf<ScanResult>()
     val bleDeviceListLiveData = MutableLiveData<MutableList<ScanResult>>()
 
     var bleScanError = MutableLiveData(false)
